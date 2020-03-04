@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Observable;
@@ -192,29 +193,20 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
                
     }
     
-    public ArrayList listarCompras(String tipoCombustible) {
+    public ArrayList listarCompras(String tipoCombustible) throws SQLException {
         
         String sql = "select * from compras where tipoCombustible = "+tipoCombustible;
         ArrayList<Compra> array = new ArrayList<>();
-    public Precios listarPrecios() {
-       
-        return null;
-    }
-
-    public void agregarPrecios(Precios p) {
         try {
-            String sql = "insert into precios(b93,b95, b97, disel, kerosene) values('" + p.getB93() + "','" + p.getB95() + "','" + p.getB97() + "','" + p.getDisel() + "','" + p.getKerosene() + "')";
             con = cn.getConnection();
             st = con.createStatement();
             rs = st.executeQuery(sql);
-            
             while(rs.next()) {
                 Compra compra = new Compra(rs.getInt("idCompra"),rs.getInt("idSurtidor"),rs.getString("tipoCombustible"),rs.getDouble("litrosCargados"),rs.getInt("precioTotal"));
                 array.add(compra);
             }
 
-            st.executeUpdate(sql);
-            JOptionPane.showMessageDialog(null, "Compra Registrada con Exito");
+           
         } catch (Exception e) {
             //algo
         }
@@ -255,4 +247,20 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
+
+    private Precios listarPrecios() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void agregarPrecios(Precios p) {
+        try {
+            String sql = "insert into precios(b93,b95, b97, disel, kerosene) values('" + p.getB93() + "','" + p.getB95() + "','" + p.getB97() + "','" + p.getDisel() + "','" + p.getKerosene() + "')";
+            con = cn.getConnection();
+            st = con.createStatement();
+            st.executeUpdate(sql);
+            JOptionPane.showMessageDialog(null, "Compra Registrada con Exito");
+        } catch (Exception e) {
+        }
+    }
+    
 }

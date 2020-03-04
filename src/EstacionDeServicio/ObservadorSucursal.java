@@ -10,6 +10,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.logging.Level;
@@ -60,6 +61,8 @@ public class ObservadorSucursal extends Observable implements Runnable{
             }
         } catch (IOException ex) {
             Logger.getLogger(ObservadorSucursal.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(ObservadorSucursal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
    
@@ -75,7 +78,7 @@ public class ObservadorSucursal extends Observable implements Runnable{
         this.clearChanged();
     }
   
-    private void enviarTransacciones() throws IOException{
+    private void enviarTransacciones() throws IOException, SQLException{
         //int idSucursal = inSocket.readInt();
         String tipoCombustible = inSocket.readUTF();
         ArrayList<Compra> compras = this.papa.listarCompras(tipoCombustible);

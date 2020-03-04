@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Surtidor;
 
 import java.io.DataInputStream;
@@ -22,6 +17,8 @@ public class Surtidor extends javax.swing.JFrame {
     /**
      * Creates new form Surtidor
      */
+    private int id;
+
     public Surtidor() {
         initComponents();
         cantidadDeCarga.setText("");
@@ -239,9 +236,11 @@ public class Surtidor extends javax.swing.JFrame {
                 int port = 10012;
 
                 try (Socket ss = new Socket(ip, port)) {
-                    DataInputStream in = new DataInputStream(ss.getInputStream());
                     DataOutputStream out = new DataOutputStream(ss.getOutputStream());
-                    out.writeUTF("mandado de informacion");
+                    //out.writeInt(id);
+                    //out.writeUTF();
+                    //out.writeDouble();
+                    //out.writeInt();
                 } catch (IOException ex) {
                     Logger.getLogger(Surtidor.class.getName()).log(Level.SEVERE, null, ex);
                 }

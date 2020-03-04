@@ -8,10 +8,9 @@ package EstacionDeServicio;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,9 +18,13 @@ import java.util.logging.Logger;
  *
  * @author SrDeLorean
  */
-public class ObservadorSucursal implements Runnable{
+public class ObservadorSucursal extends Observable implements Runnable{
 
     private int puerto;
+    private ServerSocket servidor;
+    private Socket sc;
+    private DataInputStream inSocket;
+    private DataOutputStream outSocket;
     
     public ObservadorSucursal(int puerto) {
         this.puerto = puerto;
@@ -29,23 +32,24 @@ public class ObservadorSucursal implements Runnable{
 
     @Override
     public void run() {
-        ServerSocket servidor=null;
-        Socket sc= null;
-        DataInputStream inSocket;
-        DataOutputStream outSocket;
         try{
-            
-            servidor = new ServerSocket(puerto, 128, InetAddress.getByName("192.168.0.2"));
-            System.out.println(servidor.getInetAddress());
-            InetSocketAddress a = new InetSocketAddress(InetAddress.getByName("192.168.0.2"), puerto);
-            //servidor.bind(a, puerto);
-            System.out.println(servidor.getInetAddress().getHostAddress());
+            servidor = new ServerSocket(puerto);
             while(true){
                 sc = servidor.accept();
                 inSocket = new DataInputStream(sc.getInputStream());
                 outSocket= new DataOutputStream(sc.getOutputStream()); 
-                System.out.println(inSocket.readUTF());
-                outSocket.writeUTF("fuerte y claro");
+                switch(inSocket.readInt()) {
+                    case 1:
+                        // code block
+                        actualizarPrecios();
+                        break;
+                    case 2:
+                        enviarTransacciones();
+                        break;
+                    default:
+                        // code block
+                        System.out.println("F");
+                  }
                 inSocket.close();
                 outSocket.close();
                 sc.close();
@@ -54,25 +58,25 @@ public class ObservadorSucursal implements Runnable{
             Logger.getLogger(ObservadorSucursal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    /*
-    private void actualizarPrecios() throws IOException, ClassNotFoundException{
-        while (true) {
-            int largo = dis.readInt();
-            byte[] bytes= new byte[largo];
-            for(int i=0; i<largo; i++){
-                bytes[i]=dis.readByte();
-            }
-            ByteArrayInputStream bs= new ByteArrayInputStream(bytes); // bytes es el byte[]
-            ObjectInputStream is = new ObjectInputStream(bs);
-            Precios precios = (Precios)is.readObject();
-            is.close();
-        }
+   
+    private void actualizarPrecios() throws IOException{
+        double b93 = inSocket.readDouble();
+        double b95 = inSocket.readDouble();
+        double b97 = inSocket.readDouble();
+        double disel = inSocket.readDouble();
+        double kerosene = inSocket.readDouble();
+        this.setChanged();
+        this.notifyObservers("actualizarPrecios");
+        this.clearChanged();
+        Precios precios = new Precios(b93,b95,b97,disel,kerosene);
+        this.setChanged();
+        this.notifyObservers(precios);
+        this.clearChanged();
     }
-    */
-    private void enviarTransacciones(){
-        while (true) {
-            
-        }
+  
+    private void enviarTransacciones() throws IOException{
+        int idSucursal = inSocket.readInt();
+        String tipoCombustible = inSocket.readUTF();
     }
 }
 

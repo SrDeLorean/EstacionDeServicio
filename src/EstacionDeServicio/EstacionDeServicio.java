@@ -7,7 +7,6 @@ package EstacionDeServicio;
 
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Scanner;
 
 /**
  *
@@ -18,19 +17,16 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     /**
      * Creates new form EstacionDeServicioo
      */
+    private ObservadorSucursal c;
+    private ObservadorSurtidores e;
+    
     public EstacionDeServicio() {
         initComponents();
-        /*
-        Scanner myObj = new Scanner(System.in);  // Create a Scanner object
-        System.out.println("puerto:");
-        String puerto = myObj.nextLine();  // Read user input
-        System.out.println("ip:");
-        String ip = myObj.nextLine();
-        */
-        ObservadorSucursal c = new ObservadorSucursal(5000);
+        c = new ObservadorSucursal(5000);
+        c.addObserver(this);
         Thread t = new Thread(c);
         t.start();
-        ObservadorSurtidores e = new ObservadorSurtidores(6000);
+        e = new ObservadorSurtidores(6000);
         e.addObserver(this);
         Thread estacion = new Thread(e);
         estacion.start();
@@ -98,8 +94,24 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     }
 
     @Override
-    public void update(Observable o, Object o1) {
-        
+    public synchronized void update(Observable o, Object arg) {
+        switch((String)arg) {
+            case "actualizarPrecios":
+                Precios precios = (Precios) arg;
+                System.out.println("actualizar precios");
+                //aca se crea la wea en la base de datos
+                break;
+            case "cargaCombustible":
+                int idsurtidor= (int) arg;
+                String tipoConbustible= (String) arg;
+                double litrosCargados= (Double) arg;
+                int precioTotal= (int) arg;
+                //aca se crea la wea en la base de datos
+                break;
+            default:
+                // code block
+                System.out.println("F");
+          }
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

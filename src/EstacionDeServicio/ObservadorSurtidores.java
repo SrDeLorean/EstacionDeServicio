@@ -37,8 +37,26 @@ public class ObservadorSurtidores extends Observable implements Runnable{
                 Socket sc = listener.accept();
                 System.out.println("Cliente " + sc.getRemoteSocketAddress() + " se ha conectado");
                 DataInputStream in = new DataInputStream(sc.getInputStream());
-                DataOutputStream out = new DataOutputStream(sc.getOutputStream());
-                System.out.println(in.readUTF());
+                this.setChanged();
+                this.notifyObservers("cargaCombustible");
+                this.clearChanged();
+  
+                this.setChanged();
+                this.notifyObservers(in.readInt());
+                this.clearChanged();
+                
+                this.setChanged();
+                this.notifyObservers(in.readUTF());
+                this.clearChanged();
+                
+                this.setChanged();
+                this.notifyObservers(in.readDouble());
+                this.clearChanged();
+                
+                this.setChanged();
+                this.notifyObservers(in.readInt());
+                this.clearChanged();
+                
             }
         } catch (IOException ex) {
             Logger.getLogger(ObservadorSurtidores.class.getName()).log(Level.SEVERE, null, ex);

@@ -8,6 +8,7 @@ package EstacionDeServicio;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.JOptionPane;
@@ -33,7 +34,7 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     
     public EstacionDeServicio() {
         initComponents();
-        c = new ObservadorSucursal(5000);
+        c = new ObservadorSucursal(5000,this);
         c.addObserver(this);
         Thread t = new Thread(c);
         t.start();
@@ -127,26 +128,25 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
                
     }
     
-    public void listar() {
-        String sql = "select * from persona";
+    public ArrayList listarCompras(String tipoCombustible) {
+        
+        String sql = "select * from compras where tipoCombustible = "+tipoCombustible;
+        ArrayList<Compra> array = new ArrayList<>();
         try {
             con = cn.getConnection();
             st = con.createStatement();
             rs = st.executeQuery(sql);
-            Object[] persona = new Object[3];
-//            String[] Titulos={"ID","DNI","NOMBRES"};         
-//            model=new DefaultTableModel(null,Titulos);   
-            model = (DefaultTableModel) TablaDatos.getModel();
-            while (rs.next()) {
-                persona[0] = rs.getInt("Id");
-                persona[1] = rs.getString("DNI");
-                persona[2] = rs.getString("Nombres");
-                model.addRow(persona);
+            
+            while(rs.next()) {
+                Compra compra = new Compra(rs.getInt("idCompra"),rs.getInt("idSurtidor"),rs.getString("tipoCombustible"),rs.getDouble("litrosCargados"),rs.getInt("precioTotal"));
+                array.add(compra);
             }
-            TablaDatos.setModel(model);
 
         } catch (Exception e) {
+            //algo
         }
+        
+        return array;
 
     }
 

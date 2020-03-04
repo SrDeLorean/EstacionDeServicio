@@ -95,23 +95,24 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
 
     @Override
     public synchronized void update(Observable o, Object arg) {
-        switch((String)arg) {
-            case "actualizarPrecios":
-                Precios precios = (Precios) arg;
-                System.out.println("actualizar precios");
-                //aca se crea la wea en la base de datos
-                break;
-            case "cargaCombustible":
-                int idsurtidor= (int) arg;
-                String tipoConbustible= (String) arg;
-                double litrosCargados= (Double) arg;
-                int precioTotal= (int) arg;
-                //aca se crea la wea en la base de datos
-                break;
-            default:
-                // code block
+        if (arg instanceof Precios) {
+            Precios p = (Precios) arg;
+            p.imprimirPrecios();
+        }
+        else{
+            if (arg instanceof Compra) {
+                Compra c = (Compra) arg;
+                c.imprimirCompra();
+//                //aca se crea la wea en la base de datos
+            }
+            else{
+                 //code block
                 System.out.println("F");
-          }
+            
+            }
+        }
+        
+               
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

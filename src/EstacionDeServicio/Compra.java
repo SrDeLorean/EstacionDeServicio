@@ -19,6 +19,13 @@ public class Compra {
         this.litrosCargados = litrosCargados;
         this.precioTotal = precioTotal;
     }
+    
+    public Compra(int idsurtidor, String tipoConbustible, double litrosCargados, int precioTotal) {
+        this.idsurtidor = idsurtidor;
+        this.tipoConbustible = tipoConbustible;
+        this.litrosCargados = litrosCargados;
+        this.precioTotal = precioTotal;
+    }
 
     public int getId() {
         return id;
@@ -58,6 +65,14 @@ public class Compra {
 
     public void setPrecioTotal(int precioTotal) {
         this.precioTotal = precioTotal;
+    }
+    
+    public void imprimirCompra(){   
+        System.out.println("Compra");
+        System.out.println(this.idsurtidor); 
+        System.out.println(this.tipoConbustible); 
+        System.out.println(this.litrosCargados); 
+        System.out.println(this.precioTotal); 
     }
     
 }

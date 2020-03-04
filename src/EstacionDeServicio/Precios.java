@@ -41,4 +41,19 @@ public class Precios implements Serializable{
     public double getKerosene() {
         return kerosene;
     }
+    
+    @Override
+    public String toString(){
+        String s = this.b93+"/"+this.b95+"/"+this.b97+"/"+this.disel+"/"+this.kerosene;
+        return s;
+    }
+    
+    public void imprimirPrecios(){
+        System.out.println("Precios");
+        System.out.println(b93);
+        System.out.println(b95);
+        System.out.println(b97);
+        System.out.println(disel);
+        System.out.println(kerosene);
+    }
 }

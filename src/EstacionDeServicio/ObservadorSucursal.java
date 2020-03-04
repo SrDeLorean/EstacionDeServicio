@@ -65,9 +65,6 @@ public class ObservadorSucursal extends Observable implements Runnable{
         double b97 = inSocket.readDouble();
         double disel = inSocket.readDouble();
         double kerosene = inSocket.readDouble();
-        this.setChanged();
-        this.notifyObservers("actualizarPrecios");
-        this.clearChanged();
         Precios precios = new Precios(b93,b95,b97,disel,kerosene);
         this.setChanged();
         this.notifyObservers(precios);

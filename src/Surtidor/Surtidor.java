@@ -1,9 +1,11 @@
 package Surtidor;
 
-import java.io.DataInputStream;
+import EstacionDeServicio.Precios;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -12,15 +14,24 @@ import javax.swing.JOptionPane;
  *
  * @author SrDeLorean
  */
-public class Surtidor extends javax.swing.JFrame {
+public class Surtidor extends javax.swing.JFrame implements Observer{
 
     /**
      * Creates new form Surtidor
      */
     private int id;
-
-    public Surtidor() {
+    private Precios precios;
+    private int countlitrosConsumidos=0;
+    private int countcargasRealizadas=0;
+    
+    
+    public Surtidor(int id, Precios precios) {
+        this.precios=precios;
         initComponents();
+        ObservadorEstacionDeServicio c = new ObservadorEstacionDeServicio(8000);
+        c.addObserver(this);
+        Thread t = new Thread(c);
+        t.start();
         cantidadDeCarga.setText("");
         jComboBox1.setSelectedIndex(0);
         totalAPagar.setText("0");
@@ -51,7 +62,7 @@ public class Surtidor extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         litrosConsumidos = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        cargasRealizadas = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
@@ -130,13 +141,13 @@ public class Surtidor extends javax.swing.JFrame {
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel7.setText("Cargas realizadas");
 
-        jTextField1.setEditable(false);
-        jTextField1.setBackground(new java.awt.Color(255, 255, 255));
-        jTextField1.setEnabled(false);
-        jTextField1.setFocusable(false);
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        cargasRealizadas.setEditable(false);
+        cargasRealizadas.setBackground(new java.awt.Color(255, 255, 255));
+        cargasRealizadas.setEnabled(false);
+        cargasRealizadas.setFocusable(false);
+        cargasRealizadas.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                cargasRealizadasActionPerformed(evt);
             }
         });
 
@@ -152,7 +163,7 @@ public class Surtidor extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(jLabel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(GenerarBoleta, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE))
+                            .addComponent(GenerarBoleta, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 37, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -181,7 +192,7 @@ public class Surtidor extends javax.swing.JFrame {
                     .addComponent(jLabel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(valorPorLitro)
                     .addComponent(litrosConsumidos)
-                    .addComponent(jTextField1))
+                    .addComponent(cargasRealizadas))
                 .addGap(10, 10, 10))
         );
         layout.setVerticalGroup(
@@ -204,7 +215,7 @@ public class Surtidor extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(cargasRealizadas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 15, Short.MAX_VALUE)
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(15, 15, 15)
@@ -227,6 +238,8 @@ public class Surtidor extends javax.swing.JFrame {
 
     private void cantidadDeCargaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cantidadDeCargaActionPerformed
         // TODO add your handling code here:
+        Double cantidad = Double.parseDouble(this.valorPorLitro.getText())*Double.parseDouble(this.cantidadDeCarga.getText());
+        this.totalAPagar.setText(String.format ("%f", cantidad));
     }//GEN-LAST:event_cantidadDeCargaActionPerformed
 
     private void GenerarBoletaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerarBoletaActionPerformed
@@ -237,10 +250,11 @@ public class Surtidor extends javax.swing.JFrame {
 
                 try (Socket ss = new Socket(ip, port)) {
                     DataOutputStream out = new DataOutputStream(ss.getOutputStream());
-                    //out.writeInt(id);
-                    //out.writeUTF();
-                    //out.writeDouble();
-                    //out.writeInt();
+                    out.writeInt(id);
+                    out.writeUTF(this.jComboBox1.getItemAt(this.jComboBox1.getSelectedIndex()));
+                    out.writeDouble(Double.parseDouble(this.cantidadDeCarga.getText()));
+                    out.writeInt(Integer.parseInt(this.totalAPagar.getText()));
+                    
                 } catch (IOException ex) {
                     Logger.getLogger(Surtidor.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -262,6 +276,27 @@ public class Surtidor extends javax.swing.JFrame {
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
+        String tipo = this.jComboBox1.getItemAt(this.jComboBox1.getSelectedIndex());
+        switch (tipo){
+            case "93":
+                this.valorPorLitro.setText(Double.toString(precios.getB93()));
+                break;
+            case "95":
+                this.valorPorLitro.setText(Double.toString(precios.getB95()));
+                break;
+            case "97":
+                this.valorPorLitro.setText(Double.toString(precios.getB97()));
+                break;
+            case "disel":
+                this.valorPorLitro.setText(Double.toString(precios.getDisel()));
+                break;
+            case "kerosene":
+                this.valorPorLitro.setText(Double.toString(precios.getKerosene()));
+                break;
+            default:
+                System.out.println("a la verga con el precio locoooooooooooooooooooooo");
+                break;
+        }
     }//GEN-LAST:event_jComboBox1ActionPerformed
 
     private void cancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelarActionPerformed
@@ -283,9 +318,9 @@ public class Surtidor extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_totalAPagarActionPerformed
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void cargasRealizadasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cargasRealizadasActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_cargasRealizadasActionPerformed
 
     private boolean isNumeric(String cadena){
 	try {
@@ -325,7 +360,7 @@ public class Surtidor extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Surtidor().setVisible(true);
+                new Surtidor(0, null).setVisible(true);
             }
         });
     }
@@ -334,6 +369,7 @@ public class Surtidor extends javax.swing.JFrame {
     private javax.swing.JButton GenerarBoleta;
     private javax.swing.JButton cancelar;
     private javax.swing.JTextField cantidadDeCarga;
+    private javax.swing.JTextField cargasRealizadas;
     private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -343,9 +379,14 @@ public class Surtidor extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField litrosConsumidos;
     private javax.swing.JTextField totalAPagar;
     private javax.swing.JTextField valorPorLitro;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void update(Observable o, Object arg) {
+        Precios p = (Precios) arg;
+        this.precios=p;
+    }
 }

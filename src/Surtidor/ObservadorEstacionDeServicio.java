@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package EstacionDeServicio;
+package Surtidor;
 
+import EstacionDeServicio.Precios;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -18,13 +19,13 @@ import java.util.logging.Logger;
  *
  * @author SrDeLorean
  */
-public class ObservadorSurtidores extends Observable implements Runnable{
+public class ObservadorEstacionDeServicio extends Observable implements Runnable{
     
     private int puerto;
     private DataInputStream dis;
     private DataOutputStream out;
     
-    public ObservadorSurtidores(int puerto) {
+    public ObservadorEstacionDeServicio(int puerto) {
         this.puerto = puerto;
     }
 
@@ -34,17 +35,19 @@ public class ObservadorSurtidores extends Observable implements Runnable{
             System.out.println("Servidor iniciado y escuchando en el puerto " + puerto);
             while(true){
                 Socket sc = listener.accept();
-                System.out.println("Cliente " + sc.getRemoteSocketAddress() + " se ha conectado");
-                DataInputStream in = new DataInputStream(sc.getInputStream());
-                
-                Compra compra = new Compra(in.readInt(),in.readUTF(),in.readDouble(),in.readInt());
-                
+                DataInputStream inSocket = new DataInputStream(sc.getInputStream());
+                double b93 = inSocket.readDouble();
+                double b95 = inSocket.readDouble();
+                double b97 = inSocket.readDouble();
+                double disel = inSocket.readDouble();
+                double kerosene = inSocket.readDouble();
+                Precios precios = new Precios(b93,b95,b97,disel,kerosene);
                 this.setChanged();
-                this.notifyObservers(compra);
+                this.notifyObservers(precios);
                 this.clearChanged();
             }
         } catch (IOException ex) {
-            Logger.getLogger(ObservadorSurtidores.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ObservadorEstacionDeServicio.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

@@ -56,7 +56,6 @@ public class ObservadorSurtidores extends Observable implements Runnable{
                 this.setChanged();
                 this.notifyObservers(in.readInt());
                 this.clearChanged();
-                
             }
         } catch (IOException ex) {
             Logger.getLogger(ObservadorSurtidores.class.getName()).log(Level.SEVERE, null, ex);

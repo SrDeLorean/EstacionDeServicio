@@ -77,6 +77,7 @@ public class ObservadorSucursal extends Observable implements Runnable{
     private void enviarTransacciones() throws IOException{
         int idSucursal = inSocket.readInt();
         String tipoCombustible = inSocket.readUTF();
+        
     }
 }
 

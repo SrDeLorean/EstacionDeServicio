@@ -5,8 +5,13 @@
  */
 package EstacionDeServicio;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Observable;
 import java.util.Observer;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -19,6 +24,12 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
      */
     private ObservadorSucursal c;
     private ObservadorSurtidores e;
+    
+    ConexionBD cn = new ConexionBD();
+    Connection con;
+    DefaultTableModel model;
+    Statement st;
+    ResultSet rs;
     
     public EstacionDeServicio() {
         initComponents();
@@ -98,6 +109,7 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         if (arg instanceof Precios) {
             Precios p = (Precios) arg;
             p.imprimirPrecios();
+            this.agregarPrecios(p);
         }
         else{
             if (arg instanceof Compra) {
@@ -113,6 +125,42 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         }
         
                
+    }
+    
+    public void listar() {
+        String sql = "select * from persona";
+        try {
+            con = cn.getConnection();
+            st = con.createStatement();
+            rs = st.executeQuery(sql);
+            Object[] persona = new Object[3];
+//            String[] Titulos={"ID","DNI","NOMBRES"};         
+//            model=new DefaultTableModel(null,Titulos);   
+            model = (DefaultTableModel) TablaDatos.getModel();
+            while (rs.next()) {
+                persona[0] = rs.getInt("Id");
+                persona[1] = rs.getString("DNI");
+                persona[2] = rs.getString("Nombres");
+                model.addRow(persona);
+            }
+            TablaDatos.setModel(model);
+
+        } catch (Exception e) {
+        }
+
+    }
+
+    public void agregarPrecios(Precios p) {
+        try {
+            String sql = "insert into compras(b93,b95, b97, disel, kerosene) values('" + p.getB93() + "','" + p.getB95() + "','" + p.getB97() + "','" + p.getDisel() + "','" + p.getKerosene() + "')";
+            con = cn.getConnection();
+            st = con.createStatement();
+            st.executeUpdate(sql);
+            JOptionPane.showMessageDialog(null, "Compra Registrada con Exito");
+        } catch (Exception e) {
+        }
+        
+        
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

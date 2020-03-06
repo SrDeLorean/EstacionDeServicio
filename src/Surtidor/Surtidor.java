@@ -35,7 +35,8 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
         cantidadDeCarga.setText("");
         jComboBox1.setSelectedIndex(0);
         totalAPagar.setText("0");
-        valorPorLitro.setText("por ver");
+        //valorPorLitro.setText("por ver");
+         this.valorPorLitro.setText(Double.toString(precios.getB93()));
     }
 
     /**

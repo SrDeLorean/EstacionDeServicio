@@ -131,6 +131,7 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         s = new Surtidor(Integer.parseInt(this.idSurtidor.getText()), this.listarPrecios());
         this.idSurtidor.setText("");
         JOptionPane.showMessageDialog(null, "operacion realizada con exito");
+        s.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -249,15 +250,14 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     // End of variables declaration//GEN-END:variables
 
     private Precios listarPrecios() {
-        String sql = "select b93,b95,b97,disel,kerosene from precios where id = (select max(id) from precios)";
+        //String sql = "SELECT b93,b95,b97,disel,kerosene FROM precios WHERE id = (select MAX(id) FROM precios);";
+        String sql = "Select * from precios";
         Precios p = null;
         try {
             con = cn.getConnection();
             st = con.createStatement();
             rs = st.executeQuery(sql);
             while(rs.next()) {
-                Compra compra = new Compra(rs.getInt("idCompra"),rs.getInt("idSurtidor"),rs.getString("tipoCombustible"),rs.getDouble("litrosCargados"),rs.getInt("precioTotal"));
-                
                 p = new Precios(rs.getDouble("b93"),rs.getDouble("b95"),rs.getDouble("b97"),rs.getDouble("disel"),rs.getDouble("kerosene"));
             }
 
@@ -265,6 +265,7 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         } catch (Exception e) {
             //algo
         }
+        
         
         return p;
     }

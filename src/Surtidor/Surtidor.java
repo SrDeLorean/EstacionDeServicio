@@ -277,6 +277,8 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
         String tipo = this.jComboBox1.getItemAt(this.jComboBox1.getSelectedIndex());
+        
+        System.out.println("tipo "+tipo);
         switch (tipo){
             case "93":
                 this.valorPorLitro.setText(Double.toString(precios.getB93()));

@@ -290,10 +290,10 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
             case "97":
                 this.valorPorLitro.setText(Double.toString(precios.getB97()));
                 break;
-            case "disel":
+            case "Disel":
                 this.valorPorLitro.setText(Double.toString(precios.getDisel()));
                 break;
-            case "kerosene":
+            case "Kerosene":
                 this.valorPorLitro.setText(Double.toString(precios.getKerosene()));
                 break;
             default:

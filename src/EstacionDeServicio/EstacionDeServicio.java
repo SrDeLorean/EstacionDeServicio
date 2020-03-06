@@ -249,7 +249,24 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     // End of variables declaration//GEN-END:variables
 
     private Precios listarPrecios() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        String sql = "select b93,b95,b97,disel,kerosene from precios where id = (select max(id) from precios)";
+        Precios p = null;
+        try {
+            con = cn.getConnection();
+            st = con.createStatement();
+            rs = st.executeQuery(sql);
+            while(rs.next()) {
+                Compra compra = new Compra(rs.getInt("idCompra"),rs.getInt("idSurtidor"),rs.getString("tipoCombustible"),rs.getDouble("litrosCargados"),rs.getInt("precioTotal"));
+                
+                p = new Precios(rs.getDouble("b93"),rs.getDouble("b95"),rs.getDouble("b97"),rs.getDouble("disel"),rs.getDouble("kerosene"));
+            }
+
+           
+        } catch (Exception e) {
+            //algo
+        }
+        
+        return p;
     }
 
     public void agregarPrecios(Precios p) {

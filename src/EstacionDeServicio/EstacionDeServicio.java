@@ -11,7 +11,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -39,7 +41,7 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     
     public EstacionDeServicio() {
         initComponents();
-        c = new ObservadorSucursal(5000);
+        c = new ObservadorSucursal(5000,this);
         c.addObserver(this);
         Thread t = new Thread(c);
         t.start();
@@ -129,6 +131,7 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         s = new Surtidor(Integer.parseInt(this.idSurtidor.getText()), this.listarPrecios());
         this.idSurtidor.setText("");
         JOptionPane.showMessageDialog(null, "operacion realizada con exito");
+        s.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
@@ -191,20 +194,26 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
                
     }
     
-    public Precios listarPrecios() {
-       
-        return null;
-    }
-
-    public void agregarPrecios(Precios p) {
+    public ArrayList listarCompras(String tipoCombustible) throws SQLException {
+        
+        String sql = "select * from compras where tipoCombustible = "+tipoCombustible;
+        ArrayList<Compra> array = new ArrayList<>();
         try {
-            String sql = "insert into precios(b93,b95, b97, disel, kerosene) values('" + p.getB93() + "','" + p.getB95() + "','" + p.getB97() + "','" + p.getDisel() + "','" + p.getKerosene() + "')";
             con = cn.getConnection();
             st = con.createStatement();
-            st.executeUpdate(sql);
-            JOptionPane.showMessageDialog(null, "Compra Registrada con Exito");
+            rs = st.executeQuery(sql);
+            while(rs.next()) {
+                Compra compra = new Compra(rs.getInt("idCompra"),rs.getInt("idSurtidor"),rs.getString("tipoCombustible"),rs.getDouble("litrosCargados"),rs.getInt("precioTotal"));
+                array.add(compra);
+            }
+
+           
         } catch (Exception e) {
+            //algo
         }
+        
+        return array;
+
     }
     
     public void agregarCompra(Compra c) {
@@ -239,4 +248,37 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     // End of variables declaration//GEN-END:variables
+
+    private Precios listarPrecios() {
+        //String sql = "SELECT b93,b95,b97,disel,kerosene FROM precios WHERE id = (select MAX(id) FROM precios);";
+        String sql = "Select * from precios";
+        Precios p = null;
+        try {
+            con = cn.getConnection();
+            st = con.createStatement();
+            rs = st.executeQuery(sql);
+            while(rs.next()) {
+                p = new Precios(rs.getDouble("b93"),rs.getDouble("b95"),rs.getDouble("b97"),rs.getDouble("disel"),rs.getDouble("kerosene"));
+            }
+
+           
+        } catch (Exception e) {
+            //algo
+        }
+        
+        
+        return p;
+    }
+
+    public void agregarPrecios(Precios p) {
+        try {
+            String sql = "insert into precios(b93,b95, b97, disel, kerosene) values('" + p.getB93() + "','" + p.getB95() + "','" + p.getB97() + "','" + p.getDisel() + "','" + p.getKerosene() + "')";
+            con = cn.getConnection();
+            st = con.createStatement();
+            st.executeUpdate(sql);
+            JOptionPane.showMessageDialog(null, "Compra Registrada con Exito");
+        } catch (Exception e) {
+        }
+    }
+    
 }

@@ -35,7 +35,8 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
         cantidadDeCarga.setText("");
         jComboBox1.setSelectedIndex(0);
         totalAPagar.setText("0");
-        valorPorLitro.setText("por ver");
+        //valorPorLitro.setText("por ver");
+         this.valorPorLitro.setText(Double.toString(precios.getB93()));
     }
 
     /**
@@ -277,6 +278,8 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
         // TODO add your handling code here:
         String tipo = this.jComboBox1.getItemAt(this.jComboBox1.getSelectedIndex());
+        
+        System.out.println("tipo "+tipo);
         switch (tipo){
             case "93":
                 this.valorPorLitro.setText(Double.toString(precios.getB93()));
@@ -287,10 +290,10 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
             case "97":
                 this.valorPorLitro.setText(Double.toString(precios.getB97()));
                 break;
-            case "disel":
+            case "Disel":
                 this.valorPorLitro.setText(Double.toString(precios.getDisel()));
                 break;
-            case "kerosene":
+            case "Kerosene":
                 this.valorPorLitro.setText(Double.toString(precios.getKerosene()));
                 break;
             default:

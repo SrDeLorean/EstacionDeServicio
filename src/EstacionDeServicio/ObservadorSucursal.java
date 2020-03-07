@@ -10,6 +10,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,9 +27,12 @@ public class ObservadorSucursal extends Observable implements Runnable{
     private Socket sc;
     private DataInputStream inSocket;
     private DataOutputStream outSocket;
+    private EstacionDeServicio papa;
     
-    public ObservadorSucursal(int puerto) {
+    public ObservadorSucursal(int puerto, EstacionDeServicio papa) {  
         this.puerto = puerto;
+        this.papa=papa;
+
     }
 
     @Override
@@ -56,6 +61,8 @@ public class ObservadorSucursal extends Observable implements Runnable{
             }
         } catch (IOException ex) {
             Logger.getLogger(ObservadorSucursal.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(ObservadorSucursal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
    
@@ -71,10 +78,18 @@ public class ObservadorSucursal extends Observable implements Runnable{
         this.clearChanged();
     }
   
-    private void enviarTransacciones() throws IOException{
-        int idSucursal = inSocket.readInt();
+    private void enviarTransacciones() throws IOException, SQLException{
+        //int idSucursal = inSocket.readInt();
         String tipoCombustible = inSocket.readUTF();
-        
+        ArrayList<Compra> compras = this.papa.listarCompras(tipoCombustible);
+        this.outSocket.write(compras.size());
+        for (int i = 0; i < compras.size(); i++) {
+            this.outSocket.write(compras.get(i).getId());
+            this.outSocket.write(compras.get(i).getIdsurtidor());
+            this.outSocket.writeUTF(compras.get(i).getTipoConbustible());
+            this.outSocket.writeDouble(compras.get(i).getLitrosCargados());
+            this.outSocket.write(compras.get(i).getPrecioTotal());
+        } 
     }
 }
 

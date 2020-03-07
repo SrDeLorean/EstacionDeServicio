@@ -145,7 +145,11 @@
     </Component>
     <Component class="javax.swing.JTextField" name="cantidadDeCarga">
       <Events>
+        <EventHandler event="focusGained" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="cantidadDeCargaFocusGained"/>
+        <EventHandler event="focusLost" listener="java.awt.event.FocusListener" parameters="java.awt.event.FocusEvent" handler="cantidadDeCargaFocusLost"/>
+        <EventHandler event="inputMethodTextChanged" listener="java.awt.event.InputMethodListener" parameters="java.awt.event.InputMethodEvent" handler="cantidadDeCargaInputMethodTextChanged"/>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cantidadDeCargaActionPerformed"/>
+        <EventHandler event="propertyChange" listener="java.beans.PropertyChangeListener" parameters="java.beans.PropertyChangeEvent" handler="cantidadDeCargaPropertyChange"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel1">

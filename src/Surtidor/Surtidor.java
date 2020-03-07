@@ -23,15 +23,17 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
     private Precios precios;
     private int countlitrosConsumidos=0;
     private int countcargasRealizadas=0;
-    
+    private int carga=0;
     
     public Surtidor(int id, Precios precios) {
+        this.id=id;
         this.precios=precios;
         initComponents();
         ObservadorEstacionDeServicio c = new ObservadorEstacionDeServicio(8000);
         c.addObserver(this);
         Thread t = new Thread(c);
         t.start();
+        
         cantidadDeCarga.setText("");
         jComboBox1.setSelectedIndex(0);
         totalAPagar.setText("0");
@@ -82,9 +84,29 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
             }
         });
 
+        cantidadDeCarga.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                cantidadDeCargaFocusGained(evt);
+            }
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cantidadDeCargaFocusLost(evt);
+            }
+        });
+        cantidadDeCarga.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+                cantidadDeCargaInputMethodTextChanged(evt);
+            }
+        });
         cantidadDeCarga.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 cantidadDeCargaActionPerformed(evt);
+            }
+        });
+        cantidadDeCarga.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                cantidadDeCargaPropertyChange(evt);
             }
         });
 
@@ -239,8 +261,12 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
 
     private void cantidadDeCargaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cantidadDeCargaActionPerformed
         // TODO add your handling code here:
-        Double cantidad = Double.parseDouble(this.valorPorLitro.getText())*Double.parseDouble(this.cantidadDeCarga.getText());
-        this.totalAPagar.setText(String.format ("%f", cantidad));
+        if (!this.cantidadDeCarga.equals(this.carga)){
+            Double cantidad = Double.parseDouble(this.valorPorLitro.getText())*Double.parseDouble(this.cantidadDeCarga.getText());
+            this.totalAPagar.setText(cantidad.toString());
+       
+        }
+        
     }//GEN-LAST:event_cantidadDeCargaActionPerformed
 
     private void GenerarBoletaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerarBoletaActionPerformed
@@ -254,7 +280,13 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
                     out.writeInt(id);
                     out.writeUTF(this.jComboBox1.getItemAt(this.jComboBox1.getSelectedIndex()));
                     out.writeDouble(Double.parseDouble(this.cantidadDeCarga.getText()));
-                    out.writeInt(Integer.parseInt(this.totalAPagar.getText()));
+                    //System.out.println("sdaljkf "+this.totalAPagar.getText());
+                    //Double a = Double.parseDouble(this.cantidadDeCarga.getText());
+                    Double a = Double.parseDouble(this.totalAPagar.getText());
+                    
+                    
+                    int value = (int)Math.round(a);
+                    out.writeInt(value);
                     
                 } catch (IOException ex) {
                     Logger.getLogger(Surtidor.class.getName()).log(Level.SEVERE, null, ex);
@@ -263,7 +295,7 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
                 cantidadDeCarga.setText("");
                 jComboBox1.setSelectedIndex(0);
                 totalAPagar.setText("0");
-                valorPorLitro.setText("por ver");
+                this.valorPorLitro.setText(Double.toString(precios.getB93()));
             }
             else{
                 JOptionPane.showMessageDialog(null, "La cantidad de carga debe ser numerica", "Error cantidad de carga", JOptionPane.WARNING_MESSAGE);
@@ -309,7 +341,7 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
             cantidadDeCarga.setText("");
             jComboBox1.setSelectedIndex(0);
             totalAPagar.setText("0");
-            valorPorLitro.setText("por ver");
+            this.valorPorLitro.setText(Double.toString(precios.getB93()));
         }
     }//GEN-LAST:event_cancelarActionPerformed
 
@@ -324,6 +356,23 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
     private void cargasRealizadasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cargasRealizadasActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cargasRealizadasActionPerformed
+
+    private void cantidadDeCargaPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_cantidadDeCargaPropertyChange
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cantidadDeCargaPropertyChange
+
+    private void cantidadDeCargaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cantidadDeCargaFocusLost
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cantidadDeCargaFocusLost
+
+    private void cantidadDeCargaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cantidadDeCargaFocusGained
+        // TODO add your handling code her
+        
+    }//GEN-LAST:event_cantidadDeCargaFocusGained
+
+    private void cantidadDeCargaInputMethodTextChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_cantidadDeCargaInputMethodTextChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cantidadDeCargaInputMethodTextChanged
 
     private boolean isNumeric(String cadena){
 	try {

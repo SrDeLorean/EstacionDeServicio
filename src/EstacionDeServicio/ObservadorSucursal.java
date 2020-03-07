@@ -84,11 +84,11 @@ public class ObservadorSucursal extends Observable implements Runnable{
         ArrayList<Compra> compras = this.papa.listarCompras(tipoCombustible);
         this.outSocket.write(compras.size());
         for (int i = 0; i < compras.size(); i++) {
-            this.outSocket.write(compras.get(i).getId());
-            this.outSocket.write(compras.get(i).getIdsurtidor());
+            this.outSocket.writeInt(compras.get(i).getId());
+            this.outSocket.writeInt(compras.get(i).getIdsurtidor());
             this.outSocket.writeUTF(compras.get(i).getTipoConbustible());
             this.outSocket.writeDouble(compras.get(i).getLitrosCargados());
-            this.outSocket.write(compras.get(i).getPrecioTotal());
+            this.outSocket.writeInt(compras.get(i).getPrecioTotal());
         } 
     }
 }

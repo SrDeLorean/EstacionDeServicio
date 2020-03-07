@@ -24,12 +24,14 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
     private int countlitrosConsumidos=0;
     private int countcargasRealizadas=0;
     private int carga=0;
+    private int puerto;
     
-    public Surtidor(int id, Precios precios) {
+    public Surtidor(int id, Precios precios, int puerto) {
         this.id=id;
         this.precios=precios;
+        this.puerto=puerto;
         initComponents();
-        ObservadorEstacionDeServicio c = new ObservadorEstacionDeServicio(8000);
+        ObservadorEstacionDeServicio c = new ObservadorEstacionDeServicio(puerto);
         c.addObserver(this);
         Thread t = new Thread(c);
         t.start();
@@ -412,7 +414,7 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Surtidor(0, null).setVisible(true);
+                new Surtidor(0, null, 9999).setVisible(true);
             }
         });
     }
@@ -441,4 +443,9 @@ public class Surtidor extends javax.swing.JFrame implements Observer{
         Precios p = (Precios) arg;
         this.precios=p;
     }
+
+    public int getPuerto() {
+        return puerto;
+    }
+    
 }

@@ -38,9 +38,11 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     private DefaultTableModel model;
     private Statement st;
     private ResultSet rs;
+    private ArrayList<Surtidor> surtidores;
     
     public EstacionDeServicio() {
         initComponents();
+        this.surtidores = new ArrayList<>();
         c = new ObservadorSucursal(5000,this);
         c.addObserver(this);
         Thread t = new Thread(c);
@@ -64,6 +66,8 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         jLabel1 = new javax.swing.JLabel();
         idSurtidor = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        puerto = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -84,16 +88,12 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
 
         jLabel2.setText("Agregar nuevo surtidor");
 
+        jLabel3.setText("Puerto");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(63, 63, 63)
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 131, Short.MAX_VALUE)
-                .addComponent(idSurtidor, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(117, 117, 117))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -102,7 +102,17 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
                     .addGroup(layout.createSequentialGroup()
                         .addGap(130, 130, 130)
                         .addComponent(jButton1)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(180, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(63, 63, 63)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(idSurtidor, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
+                    .addComponent(puerto))
+                .addGap(117, 117, 117))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -113,7 +123,11 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(idSurtidor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(47, 47, 47)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel3)
+                    .addComponent(puerto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(21, 21, 21)
                 .addComponent(jButton1)
                 .addContainerGap(151, Short.MAX_VALUE))
         );
@@ -128,8 +142,10 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         Surtidor s;
-        s = new Surtidor(Integer.parseInt(this.idSurtidor.getText()), this.listarPrecios());
+        s = new Surtidor(Integer.parseInt(this.idSurtidor.getText()), this.listarPrecios(), Integer.parseInt(this.puerto.getText()));
+        this.surtidores.add(s);
         this.idSurtidor.setText("");
+        this.puerto.setText("");
         JOptionPane.showMessageDialog(null, "operacion realizada con exito");
         s.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
@@ -232,16 +248,17 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
 
     private void enviarListaDePreciosASurtidores(Precios p) {
         String ip = "localhost";
-        int port = 8000;
-        try (Socket ss = new Socket(ip, port)) {
-            DataOutputStream out = new DataOutputStream(ss.getOutputStream());
-            out.writeDouble(p.getB93());
-            out.writeDouble(p.getB95());
-            out.writeDouble(p.getB97());
-            out.writeDouble(p.getDisel());
-            out.writeDouble(p.getKerosene());
-        } catch (IOException ex) {
-            Logger.getLogger(Surtidor.class.getName()).log(Level.SEVERE, null, ex);
+        for (int i = 0; i < this.surtidores.size(); i++) {
+            try (Socket ss = new Socket(ip, this.surtidores.get(i).getPuerto())) {
+                DataOutputStream out = new DataOutputStream(ss.getOutputStream());
+                out.writeDouble(p.getB93());
+                out.writeDouble(p.getB95());
+                out.writeDouble(p.getB97());
+                out.writeDouble(p.getDisel());
+                out.writeDouble(p.getKerosene());
+            } catch (IOException ex) {
+                Logger.getLogger(Surtidor.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -250,6 +267,8 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JTextField puerto;
     // End of variables declaration//GEN-END:variables
 
     private Precios listarPrecios() {

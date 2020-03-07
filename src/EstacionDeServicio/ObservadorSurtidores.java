@@ -39,6 +39,7 @@ public class ObservadorSurtidores extends Observable implements Runnable{
                 
                 Compra compra = new Compra(in.readInt(),in.readUTF(),in.readDouble(),in.readInt());
                 
+                System.out.println(compra.getPrecioTotal());
                 this.setChanged();
                 this.notifyObservers(compra);
                 this.clearChanged();

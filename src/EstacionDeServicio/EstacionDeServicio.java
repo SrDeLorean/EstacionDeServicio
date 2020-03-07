@@ -45,7 +45,7 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         c.addObserver(this);
         Thread t = new Thread(c);
         t.start();
-        e = new ObservadorSurtidores(6000);
+        e = new ObservadorSurtidores(10012);
         e.addObserver(this);
         Thread estacion = new Thread(e);
         estacion.start();
@@ -181,8 +181,10 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         else{
             if (arg instanceof Compra) {
                 Compra c = (Compra) arg;
-                c.imprimirCompra();
-//                //aca se crea la wea en la base de datos
+                //c.imprimirCompra();
+                System.out.println("pase por aqui");
+                this.agregarCompra(c);
+
             }
             else{
                  //code block
@@ -218,12 +220,13 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     
     public void agregarCompra(Compra c) {
         try {
-            String sql = "insert into compras(idCompra,idSurtidor, tipoCombustible, litrosCargados, precioTotal) values('" + c.getIdsurtidor() + "','" + c.getTipoConbustible() + "','" + c.getLitrosCargados() + "','" + c.getPrecioTotal() + "')";
+            String sql = "insert into compras(idSurtidor, tipoCombustible, litrosCargados, precioTotal) values('" + c.getIdsurtidor() + "','" + c.getTipoConbustible() + "','" + c.getLitrosCargados() + "','" + c.getPrecioTotal() + "')";
             con = cn.getConnection();
             st = con.createStatement();
             st.executeUpdate(sql);
             JOptionPane.showMessageDialog(null, "Compra Registrada con Exito");
         } catch (Exception e) {
+            System.out.println(e);
         }
     }
 

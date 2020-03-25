@@ -302,5 +302,44 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         } catch (Exception e) {
         }
     }
+
+    public double getLitrosConsumidos(String tipoCombustible) {   
+        String sql = "select SUM(litrosCargados) as tabla from compras where tipoCombustible = "+tipoCombustible;
+        double litros =0;
+        try {
+            con = cn.getConnection();
+            st = con.createStatement();
+            rs = st.executeQuery(sql);
+            if (rs.next()) {
+                litros = rs.getDouble("tabla");
+            }
+            
+
+        } catch (Exception e) {
+            //algo
+            System.out.println(e);
+        }
+        
+        return litros;
+    }
+
+    public int getCantidadDeCargas(String tipoCombustible) {
+        String sql = "select COUNT(idCompra) as tabla from compras where tipoCombustible = "+tipoCombustible;
+        int cantidadDeCarga = 0;
+        try {
+            con = cn.getConnection();
+            st = con.createStatement();
+            rs = st.executeQuery(sql);
+            if (rs.next()) {
+                cantidadDeCarga = rs.getInt("tabla");
+            }
+            
+
+        } catch (Exception e) {
+            //algo
+            System.out.println(e);
+        }
+        return cantidadDeCarga;
+    }
     
 }

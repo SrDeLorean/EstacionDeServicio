@@ -1,6 +1,7 @@
 package EstacionDeServicio;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  *
@@ -13,6 +14,7 @@ public class Precios implements Serializable{
     private double b97;
     private double disel;
     private double kerosene;
+    private Date fecha;
 
     public Precios(double b93, double b95, double b97, double disel, double kerosene) {
         this.b93 = b93;
@@ -20,6 +22,16 @@ public class Precios implements Serializable{
         this.b97 = b97;
         this.disel = disel;
         this.kerosene = kerosene;
+        this.fecha=new Date();
+    }
+    
+    public Precios(double b93, double b95, double b97, double disel, double kerosene, Date fecha) {
+        this.b93 = b93;
+        this.b95 = b95;
+        this.b97 = b97;
+        this.disel = disel;
+        this.kerosene = kerosene;
+        this.fecha= fecha;
     }
 
     public double getB93() {
@@ -56,4 +68,14 @@ public class Precios implements Serializable{
         System.out.println(disel);
         System.out.println(kerosene);
     }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+    
+    
 }

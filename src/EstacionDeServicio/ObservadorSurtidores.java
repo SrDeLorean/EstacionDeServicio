@@ -36,10 +36,15 @@ public class ObservadorSurtidores extends Observable implements Runnable{
                 Socket sc = listener.accept();
                 System.out.println("Cliente " + sc.getRemoteSocketAddress() + " se ha conectado");
                 DataInputStream in = new DataInputStream(sc.getInputStream());
-                
-                Compra compra = new Compra(in.readInt(),in.readUTF(),in.readDouble(),in.readInt());
-                
-                System.out.println(compra.getPrecioTotal());
+                int contador = in.readInt();
+                int idSurtidor = in.readInt();
+                Compra compra = new Compra(idSurtidor,in.readUTF(),in.readDouble(),in.readInt());
+                if(contador!=1){
+                    Error error = new Error(idSurtidor, contador);
+                    this.setChanged();
+                    this.notifyObservers(error);
+                    this.clearChanged();
+                }
                 this.setChanged();
                 this.notifyObservers(compra);
                 this.clearChanged();

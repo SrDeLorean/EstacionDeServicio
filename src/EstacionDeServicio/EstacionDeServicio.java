@@ -39,6 +39,8 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     private Statement st;
     private ResultSet rs;
     private ArrayList<Surtidor> surtidores;
+    private Thread hiloEscuchandoSurtidores;
+    
     
     public EstacionDeServicio() {
         initComponents();
@@ -49,8 +51,8 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         t.start();
         e = new ObservadorSurtidores(10012);
         e.addObserver(this);
-        Thread estacion = new Thread(e);
-        estacion.start();
+        hiloEscuchandoSurtidores = new Thread(e);
+        hiloEscuchandoSurtidores.start();
     }
 
     /**
@@ -68,6 +70,11 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         puerto = new javax.swing.JTextField();
+        reiniciar = new javax.swing.JButton();
+        detener = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        nuevosPrecios = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -89,6 +96,31 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         jLabel2.setText("Agregar nuevo surtidor");
 
         jLabel3.setText("Puerto");
+
+        reiniciar.setText("Reiniciar");
+        reiniciar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                reiniciarActionPerformed(evt);
+            }
+        });
+
+        detener.setText("Detener");
+        detener.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                detenerActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Escuchar surtidores");
+
+        nuevosPrecios.setText("Nuevos Precios");
+        nuevosPrecios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nuevosPreciosActionPerformed(evt);
+            }
+        });
+
+        jLabel5.setText("Cambiar precio E.S");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -113,6 +145,18 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
                     .addComponent(idSurtidor, javax.swing.GroupLayout.DEFAULT_SIZE, 77, Short.MAX_VALUE)
                     .addComponent(puerto))
                 .addGap(117, 117, 117))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(nuevosPrecios)
+                    .addComponent(jLabel5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel4)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(reiniciar, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(detener, javax.swing.GroupLayout.Alignment.TRAILING)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -129,7 +173,17 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
                     .addComponent(puerto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(21, 21, 21)
                 .addComponent(jButton1)
-                .addContainerGap(151, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 48, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(reiniciar)
+                    .addComponent(nuevosPrecios))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(detener)
+                .addGap(19, 19, 19))
         );
 
         pack();
@@ -149,6 +203,26 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         JOptionPane.showMessageDialog(null, "operacion realizada con exito");
         s.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void reiniciarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_reiniciarActionPerformed
+        // TODO add your handling code here:
+        e = new ObservadorSurtidores(10012);
+        e.addObserver(this);
+        hiloEscuchandoSurtidores = new Thread(e);
+        hiloEscuchandoSurtidores.start();
+    }//GEN-LAST:event_reiniciarActionPerformed
+
+    private void detenerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_detenerActionPerformed
+
+        // TODO add your handling code here:
+        hiloEscuchandoSurtidores.stop();
+
+    }//GEN-LAST:event_detenerActionPerformed
+
+    private void nuevosPreciosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevosPreciosActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_nuevosPreciosActionPerformed
 
     /**
      * @param args the command line arguments
@@ -197,15 +271,11 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         else{
             if (arg instanceof Compra) {
                 Compra c = (Compra) arg;
-                //c.imprimirCompra();
-                System.out.println("pase por aqui");
                 this.agregarCompra(c);
 
-            }
-            else{
-                 //code block
-                System.out.println("F");
-            
+            }if (arg instanceof Error) {
+                Error c = (Error) arg;
+                this.agregarError(c);
             }
         }
         
@@ -221,7 +291,7 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
             st = con.createStatement();
             rs = st.executeQuery(sql);
             while(rs.next()) {
-                Compra compra = new Compra(rs.getInt("idCompra"),rs.getInt("idSurtidor"),rs.getString("tipoCombustible"),rs.getDouble("litrosCargados"),rs.getInt("precioTotal"));
+                Compra compra = new Compra(rs.getInt("idCompra"),rs.getInt("idSurtidor"),rs.getString("tipoCombustible"),rs.getDouble("litrosCargados"),rs.getInt("precioTotal"), rs.getDate("fecha"));
                 array.add(compra);
             }
 
@@ -236,12 +306,13 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     
     public void agregarCompra(Compra c) {
         try {
-            String sql = "insert into compras(idSurtidor, tipoCombustible, litrosCargados, precioTotal) values('" + c.getIdsurtidor() + "','" + c.getTipoConbustible() + "','" + c.getLitrosCargados() + "','" + c.getPrecioTotal() + "')";
+            java.sql.Date sqlDate = new java.sql.Date(c.getFecha().getTime());
+            String sql = "insert into compras(idSurtidor, tipoCombustible, litrosCargados, precioTotal, fecha) values('" + c.getIdsurtidor() + "','" + c.getTipoConbustible() + "','" + c.getLitrosCargados() + "','" + c.getPrecioTotal() + "','" + sqlDate + "')";
             con = cn.getConnection();
             st = con.createStatement();
             st.executeUpdate(sql);
-            JOptionPane.showMessageDialog(null, "Compra Registrada con Exito");
         } catch (Exception e) {
+            System.out.println("Falla en agregar compra");
             System.out.println(e);
         }
     }
@@ -263,12 +334,17 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton detener;
     private javax.swing.JTextField idSurtidor;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JButton nuevosPrecios;
     private javax.swing.JTextField puerto;
+    private javax.swing.JButton reiniciar;
     // End of variables declaration//GEN-END:variables
 
     private Precios listarPrecios() {
@@ -294,12 +370,14 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
 
     public void agregarPrecios(Precios p) {
         try {
-            String sql = "insert into precios(b93,b95, b97, disel, kerosene) values('" + p.getB93() + "','" + p.getB95() + "','" + p.getB97() + "','" + p.getDisel() + "','" + p.getKerosene() + "')";
+            java.sql.Date sqlDate = new java.sql.Date(p.getFecha().getTime());
+            String sql = "insert into precios(b93,b95, b97, disel, kerosene, fecha) values('" + p.getB93() + "','" + p.getB95() + "','" + p.getB97() + "','" + p.getDisel() + "','" + p.getKerosene() + "','" + sqlDate + "')";
             con = cn.getConnection();
             st = con.createStatement();
             st.executeUpdate(sql);
-            JOptionPane.showMessageDialog(null, "Compra Registrada con Exito");
         } catch (Exception e) {
+            System.out.println("Falla en agregar precio");
+            System.out.println(e);
         }
     }
 
@@ -340,6 +418,23 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
             System.out.println(e);
         }
         return cantidadDeCarga;
+    }
+
+    /**
+     * Milla haste cargo
+     * @param c 
+     */
+    private void agregarError(Error c) {
+        try {
+            java.sql.Date sqlDate = new java.sql.Date(c.getFecha().getTime());
+            String sql = "insert into errores(idSurtidor, nIntentos, fecha) values('" + c.getIdSurtidor() + "','" + c.getnIntentos() + "','" + sqlDate + "')";
+            con = cn.getConnection();
+            st = con.createStatement();
+            st.executeUpdate(sql);
+        } catch (Exception e) {
+            System.out.println("Falla en agregar error");
+            System.out.println(e);
+        }
     }
     
 }

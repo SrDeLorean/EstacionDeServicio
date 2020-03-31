@@ -1,5 +1,7 @@
 package EstacionDeServicio;
 
+import java.util.Date;
+
 /**
  *
  * @author SrDeLorean
@@ -11,13 +13,15 @@ public class Compra {
     private String tipoConbustible;
     private double litrosCargados;
     private int precioTotal;
+    private Date fecha;
 
-    public Compra(int id, int idsurtidor, String tipoConbustible, double litrosCargados, int precioTotal) {
+    public Compra(int id, int idsurtidor, String tipoConbustible, double litrosCargados, int precioTotal, Date fecha) {
         this.id = id;
         this.idsurtidor = idsurtidor;
         this.tipoConbustible = tipoConbustible;
         this.litrosCargados = litrosCargados;
         this.precioTotal = precioTotal;
+        this.fecha= fecha;
     }
     
     public Compra(int idsurtidor, String tipoConbustible, double litrosCargados, int precioTotal) {
@@ -25,6 +29,7 @@ public class Compra {
         this.tipoConbustible = tipoConbustible;
         this.litrosCargados = litrosCargados;
         this.precioTotal = precioTotal;
+        this.fecha= new Date();
     }
 
     public int getId() {
@@ -74,5 +79,15 @@ public class Compra {
         System.out.println(this.litrosCargados); 
         System.out.println(this.precioTotal); 
     }
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+    
+    
     
 }

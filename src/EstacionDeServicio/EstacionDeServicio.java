@@ -18,7 +18,10 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -33,7 +36,6 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     private ObservadorSucursal c;
     private ObservadorSurtidores e;
     private ConexionBDGoogleCloud conexionBDGoogleCloud = new ConexionBDGoogleCloud();
-
     private ConexionBD cn = new ConexionBD();
     private Connection con;
     private DefaultTableModel model;
@@ -329,16 +331,9 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
             System.out.println("error");
             return;
         }
-        try {
-            java.sql.Date sqlDate = new java.sql.Date(c.getFecha().getTime());
-            String sql = "insert into compras(idSucursal, idCompra, idSurtidor, tipoConbustible, litrosCargados, precioTotal, fecha) values('" + this.idEstacion + "','" + id + "','" + c.getIdsurtidor() + "','" + c.getTipoConbustible() + "','" + c.getLitrosCargados() + "','" + c.getPrecioTotal() + "','" + sqlDate + "')";
-            con = conexionBDGoogleCloud.getConnection();
-            st = con.createStatement();
-            st.executeUpdate(sql);
-            //JOptionPane.showMessageDialog(null, "Estacion de servicio registrada");
-        } catch (Exception e) {
-            System.out.println(e);
-        }
+        enviarDatosGoogle a = new enviarDatosGoogle(this, c, idEstacion, id);
+        Thread t = new Thread(a);
+        t.start();
     }
 
     private void enviarListaDePreciosASurtidores(Precios p) {
@@ -463,7 +458,7 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     
     private Precios listarPreciosGoogleCloud() {
         //String sql = "SELECT b93,b95,b97,disel,kerosene FROM precios WHERE id = (select MAX(id) FROM precios);";
-        String sql = "Select * from precios where idSucursal=1";
+        String sql = "Select * from precios where idSucursal=" + this.idEstacion;
         Precios precio = null;
         try {
             con = conexionBDGoogleCloud.getConnection();
@@ -477,5 +472,99 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
         }
         return precio;
     }
+
+    public ObservadorSucursal getC() {
+        return c;
+    }
+
+    public ObservadorSurtidores getE() {
+        return e;
+    }
+
+    public ConexionBDGoogleCloud getConexionBDGoogleCloud() {
+        return conexionBDGoogleCloud;
+    }
+
+    public ConexionBD getCn() {
+        return cn;
+    }
+
+    public Connection getCon() {
+        return con;
+    }
+
+    public DefaultTableModel getModel() {
+        return model;
+    }
+
+    public Statement getSt() {
+        return st;
+    }
+
+    public ResultSet getRs() {
+        return rs;
+    }
+
+    public ArrayList<Surtidor> getSurtidores() {
+        return surtidores;
+    }
+
+    public Thread getHiloEscuchandoSurtidores() {
+        return hiloEscuchandoSurtidores;
+    }
+
+    public int getIdEstacion() {
+        return idEstacion;
+    }
+
+    public JButton getDetener() {
+        return detener;
+    }
+
+    public JTextField getIdSurtidor() {
+        return idSurtidor;
+    }
+
+    public JButton getjButton1() {
+        return jButton1;
+    }
+
+    public JLabel getjLabel1() {
+        return jLabel1;
+    }
+
+    public JLabel getjLabel2() {
+        return jLabel2;
+    }
+
+    public JLabel getjLabel3() {
+        return jLabel3;
+    }
+
+    public JLabel getjLabel4() {
+        return jLabel4;
+    }
+
+    public JLabel getjLabel5() {
+        return jLabel5;
+    }
+
+    public JButton getNuevosPrecios() {
+        return nuevosPrecios;
+    }
+
+    public JTextField getPuerto() {
+        return puerto;
+    }
+
+    public JButton getReiniciar() {
+        return reiniciar;
+    }
+
+    public void setConexionBDGoogleCloud(ConexionBDGoogleCloud conexionBDGoogleCloud) {
+        this.conexionBDGoogleCloud = conexionBDGoogleCloud;
+    }
+
+    
     
 }

@@ -32,7 +32,8 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
      */
     private ObservadorSucursal c;
     private ObservadorSurtidores e;
-    
+    private ConexionBDGoogleCloud conexionBDGoogleCloud = new ConexionBDGoogleCloud();
+
     private ConexionBD cn = new ConexionBD();
     private Connection con;
     private DefaultTableModel model;
@@ -40,7 +41,7 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
     private ResultSet rs;
     private ArrayList<Surtidor> surtidores;
     private Thread hiloEscuchandoSurtidores;
-    
+    private int idEstacion=1;
     
     public EstacionDeServicio() {
         initComponents();
@@ -221,7 +222,10 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
 
     private void nuevosPreciosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nuevosPreciosActionPerformed
         // TODO add your handling code here:
-        
+        Precios p = this.listarPreciosGoogleCloud();
+        this.enviarListaDePreciosASurtidores(p);
+        p.imprimirPrecios();
+        this.agregarPrecios(p);
     }//GEN-LAST:event_nuevosPreciosActionPerformed
 
     /**
@@ -304,15 +308,35 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
 
     }
     
-    public void agregarCompra(Compra c) {
+        public void agregarCompra(Compra c) {
+        int id=-1;
         try {
             java.sql.Date sqlDate = new java.sql.Date(c.getFecha().getTime());
             String sql = "insert into compras(idSurtidor, tipoCombustible, litrosCargados, precioTotal, fecha) values('" + c.getIdsurtidor() + "','" + c.getTipoConbustible() + "','" + c.getLitrosCargados() + "','" + c.getPrecioTotal() + "','" + sqlDate + "')";
             con = cn.getConnection();
             st = con.createStatement();
-            st.executeUpdate(sql);
+            st.executeUpdate(sql, Statement.RETURN_GENERATED_KEYS);
+            ResultSet rs = st.getGeneratedKeys();
+            if (rs.next()){
+                id=rs.getInt(1);
+                System.out.println("id:" + id);
+            }
         } catch (Exception e) {
             System.out.println("Falla en agregar compra");
+            System.out.println(e);
+        }
+        if(id==-1){
+            System.out.println("error");
+            return;
+        }
+        try {
+            java.sql.Date sqlDate = new java.sql.Date(c.getFecha().getTime());
+            String sql = "insert into compras(idSucursal, idCompra, idSurtidor, tipoConbustible, litrosCargados, precioTotal, fecha) values('" + this.idEstacion + "','" + id + "','" + c.getIdsurtidor() + "','" + c.getTipoConbustible() + "','" + c.getLitrosCargados() + "','" + c.getPrecioTotal() + "','" + sqlDate + "')";
+            con = conexionBDGoogleCloud.getConnection();
+            st = con.createStatement();
+            st.executeUpdate(sql);
+            //JOptionPane.showMessageDialog(null, "Estacion de servicio registrada");
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
@@ -435,6 +459,23 @@ public class EstacionDeServicio extends javax.swing.JFrame implements Observer{
             System.out.println("Falla en agregar error");
             System.out.println(e);
         }
+    }
+    
+    private Precios listarPreciosGoogleCloud() {
+        //String sql = "SELECT b93,b95,b97,disel,kerosene FROM precios WHERE id = (select MAX(id) FROM precios);";
+        String sql = "Select * from precios where idSucursal=1";
+        Precios precio = null;
+        try {
+            con = conexionBDGoogleCloud.getConnection();
+            st = con.createStatement();
+            rs = st.executeQuery(sql);
+            while(rs.next()) {
+                precio = new Precios(rs.getDouble("b93"),rs.getDouble("b95"),rs.getDouble("b97"),rs.getDouble("diesel"),rs.getDouble("kerosene"));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return precio;
     }
     
 }
